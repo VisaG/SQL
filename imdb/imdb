@@ -1,0 +1,1 @@
+java -cp lib/IMDB.jar:lib/ojdbc7.jar:lib/jcalendar-1.4.jar edu.scu.IMDB.jform.Welcome

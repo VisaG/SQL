@@ -1,0 +1,1 @@
+java -cp lib/IMDB.jar:lib/ojdbc7.jar edu.scu.IMDB.populate.PopulateDB $*

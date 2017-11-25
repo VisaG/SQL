@@ -1,0 +1,108 @@
+package edu.scu.IMDB.populate;
+
+import static edu.scu.IMDB.framework.jdbcConnection.getConnection;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class PopulateDB {   
+
+    public static void main(String args[]) {
+        
+        Connection conn = null;
+        ResultSet rs = null;
+        PreparedStatement pst = null;
+        String sql = null;
+        
+        //reading file line by line in Java using BufferedReader       
+        FileInputStream fis = null;
+        BufferedReader reader = null;
+        int batchsize = 100;
+      
+        //System.out.println(args[0]);
+        
+        try {
+            fis = new FileInputStream("/Users/visa/Downloads/movies.dat");
+            reader = new BufferedReader(new InputStreamReader(fis));
+          
+            System.out.println("Reading File line by line using BufferedReader");
+
+            conn = getConnection();
+                
+            sql = "insert into mv values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            pst = conn.prepareStatement(sql);
+
+            String line = reader.readLine();
+            //Skip header
+            line = reader.readLine();
+            int numRecords = 0;
+           
+            while(line != null){
+                numRecords++;
+                //line.toString().trim();
+                String cvalues[] = line.toString().trim().split("	");
+                //for (String value : cvalues) {                   
+                  //System.out.println(value);
+                  pst.setInt(1, Integer.parseInt(cvalues[0]));
+                  pst.setString(2, cvalues[1]);
+                  pst.setInt(3, Integer.parseInt(cvalues[2]));
+                  pst.setString(4, cvalues[3]);
+                  pst.setString(5, cvalues[4]);
+                  pst.setInt(6, Integer.parseInt(cvalues[5]));
+                  pst.setString(7, cvalues[6]);
+                  pst.setFloat(8, Float.valueOf(cvalues[7]));
+                  pst.setFloat(9, Float.valueOf(cvalues[8]));
+                  pst.setFloat(10, Float.valueOf(cvalues[9]));
+                  pst.setFloat(11, Float.valueOf(cvalues[10]));
+                  pst.setFloat(12, Float.valueOf(cvalues[11]));
+                  pst.setFloat(13, Float.valueOf(cvalues[12]));
+                  pst.setFloat(14, Float.valueOf(cvalues[13]));
+                  pst.setFloat(15, Float.valueOf(cvalues[14]));
+                  pst.setFloat(16, Float.valueOf(cvalues[15]));
+                  pst.setFloat(17, Float.valueOf(cvalues[16]));
+                  pst.setFloat(18, Float.valueOf(cvalues[17]));
+                  pst.setFloat(19, Float.valueOf(cvalues[18]));
+                  pst.setFloat(20, Float.valueOf(cvalues[19]));
+                  pst.setString(21, cvalues[20]);
+                  
+                  pst.addBatch();
+                //}
+                
+                if (numRecords % batchsize == 0) {
+                  pst.executeBatch();
+                  System.out.println("Inserted numRecords = " + numRecords);
+                }
+
+                line = reader.readLine();
+            } 
+            
+            pst.executeBatch();
+            System.out.println("Inserted numRecords = " + numRecords);
+          
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(PopulateDB.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(PopulateDB.class.getName()).log(Level.SEVERE, null, ex);
+          
+        } catch (SQLException ex) {
+                Logger.getLogger(PopulateDB.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(PopulateDB.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+            try {
+                reader.close();
+                fis.close();
+            } catch (IOException ex) {
+                Logger.getLogger(PopulateDB.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    } 
+}
